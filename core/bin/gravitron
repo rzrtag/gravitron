@@ -68,6 +68,15 @@ case "$CMD" in
     plugins)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list "$@" ;;
     enable)   exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" enable "$@" ;;
     disable)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" disable "$@" ;;
+    update)
+        echo "[Gravitron] Pulling latest Logic Core from origin/main..."
+        git -C "$GRAVITRON_ROOT" pull origin main
+        echo "[Gravitron] Done. Run 'gravitron doctor' to verify." ;;
+    push-update)
+        git -C "$GRAVITRON_ROOT" add -A
+        git -C "$GRAVITRON_ROOT" commit -m "${1:-chore: update gravitron engine}"
+        git -C "$GRAVITRON_ROOT" push origin main
+        echo "[Gravitron] Pushed to origin/main." ;;
     npx)      
         export PATH="$GRAVITRON_CORE/runtimes/node/bin:$PATH"
         exec npx "$@" ;;
