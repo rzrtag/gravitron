@@ -69,9 +69,12 @@ case "$CMD" in
     test)     exec python3 "$GRAVITRON_CORE/lib/gravitron_tester.py" "$@" ;;
     brief)    exec python3 "$GRAVITRON_CORE/lib/gravitron_brief.py" "$@" ;;
     init)     exec python3 "$GRAVITRON_CORE/lib/gravitron_init.py" "$@" ;;
-    plugins)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list "$@" ;;
-    enable)   exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" enable "$@" ;;
-    disable)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" disable "$@" ;;
+    plugins)      exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list "$@" ;;
+    enable)       exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" enable "$@" ;;
+    disable)      exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" disable "$@" ;;
+    skills)       exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" skills "$@" ;;
+    skill-enable) exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" skill-enable "$@" ;;
+    skill-disable)exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" skill-disable "$@" ;;
     update)
         echo "[Gravitron] Pulling latest Logic Core from origin/main..."
         git -C "$GRAVITRON_ROOT" pull origin main

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-## Gravitron Plugin: AST Reader
+## Gravitron Plugin: Symbol Reader
 name: symbol-reader
-description: Surgical symbol extraction from Python files using AST (zero external deps) symbol from a Python file using AST (zero external deps)
+description: Surgical AST symbol extraction from Python files (zero external deps)
 version: 1.0
-commands: [gravitron ast <file> <symbol>]
+commands: [gravitron symbol-reader <file.py> <SymbolName>]
 """
 import ast
 import sys
