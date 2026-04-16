@@ -48,8 +48,10 @@ if [[ -z "$CMD" ]]; then
     echo "Usage: gravitron <command> [args...]"
     echo ""
     echo "Core Commands:"
-    echo "  util, snap, search, estimate, trace, certify"
-    echo "  doctor, test, plugins, enable, disable"
+    echo "  snap, util, search, estimate"
+    echo "  doctor, test, brief, init"
+    echo "  plugins, enable, disable"
+    echo "  update, push-update"
     echo "  npx, pip, chrome"
     echo ""
     exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list
@@ -65,6 +67,8 @@ case "$CMD" in
     search)   exec bash "$GRAVITRON_CORE/bin/gravitron-search" "$@" ;;
     doctor)   exec python3 "$GRAVITRON_CORE/lib/gravitron_doctor.py" "$@" ;;
     test)     exec python3 "$GRAVITRON_CORE/lib/gravitron_tester.py" "$@" ;;
+    brief)    exec python3 "$GRAVITRON_CORE/lib/gravitron_brief.py" "$@" ;;
+    init)     exec python3 "$GRAVITRON_CORE/lib/gravitron_init.py" "$@" ;;
     plugins)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list "$@" ;;
     enable)   exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" enable "$@" ;;
     disable)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" disable "$@" ;;
