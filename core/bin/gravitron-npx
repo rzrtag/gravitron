@@ -1,0 +1,4 @@
+#!/bin/bash
+export GRAVITRON_HOME="${GRAVITRON_HOME:-$HOME/.gravitron}"
+export PATH="$GRAVITRON_HOME/node-internal/bin:$PATH"
+exec npx "$@"

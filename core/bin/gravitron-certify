@@ -1,0 +1,60 @@
+#!/bin/bash
+# gravitron-certify — Smoke test for the Gravitron 3.0 Harness
+export GRAVITRON_ROOT="$HOME/.gravitron"
+export GRAVITRON_CORE="$GRAVITRON_ROOT/core"
+
+PASS=0
+FAIL=0
+
+check() {
+    local label=$1
+    local result=$2
+    if [ "$result" -eq 0 ]; then
+        echo "  ✓ $label"
+        PASS=$((PASS + 1))
+    else
+        echo "  ✗ $label"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
+echo "=== [gravitron-certify] Harness v3.0 Smoke Test ==="
+echo ""
+
+# 1. Router Logic
+echo "[1/4] Harness Routing (gravitron util)..."
+CTX_ID=$(echo "harness-test" | gravitron util store 2>/dev/null | grep "ctx:" | cut -d':' -f2)
+if [ -n "$CTX_ID" ]; then
+    gravitron util fetch "$CTX_ID" 2>/dev/null | grep -q "harness-test"
+    check "Router: util store/fetch roundtrip" $?
+else
+    echo "  ✗ Router: util store/fetch (failed)"
+    FAIL=$((FAIL + 1))
+fi
+
+# 2. Search
+echo "[2/4] Harness Routing (gravitron search)..."
+gravitron search "GRAVITRON_ROOT" "$GRAVITRON_CORE" 2>/dev/null | grep -q "gravitron"
+check "Router: search finds patterns" $?
+
+# 3. Snapshot
+echo "[3/4] Harness Routing (gravitron snap)..."
+TS_OUT=$(gravitron snap snap /tmp --project certify-test 2>/dev/null)
+echo "$TS_OUT" | grep -q "Snapshot created"
+check "Router: snap creates snapshot" $?
+rm -rf "$GRAVITRON_STATE/snapshots/certify-test"
+
+# 4. Plugin Discovery
+echo "[4/4] Plugin Discovery (usr/plugins)..."
+cat <<EOF > ~/.gravitron/usr/plugins/test-plugin.sh
+#!/bin/bash
+echo "plugin-verified"
+EOF
+chmod +x ~/.gravitron/usr/plugins/test-plugin.sh
+gravitron test-plugin | grep -q "plugin-verified"
+check "Router: Dynamic plugin discovery" $?
+rm ~/.gravitron/usr/plugins/test-plugin.sh
+
+echo ""
+echo "=== Results: $PASS passed, $FAIL failed ==="
+[ "$FAIL" -eq 0 ] && echo "HARNESS INTEGRITY SECURED ✓" && exit 0 || exit 1

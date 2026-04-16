@@ -1,0 +1,20 @@
+# Gravitron Sovereign Engine — .gitignore
+# Exclude runtimes (large binaries) and state-silo artifacts
+
+# Node.js runtime (large; restored via gravitron doctor)
+core/runtimes/node/
+core/runtimes/browser/
+
+# Python runtime (restored via gravitron pip)
+core/runtimes/python/
+
+# OS artifacts
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor artifacts
+.vscode/
+*.swp
+*.swo

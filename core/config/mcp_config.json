@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "mama": {
+      "command": "gravitron",
+      "args": [
+        "npx",
+        "-y",
+        "@jungjaehoon/mama-server"
+      ],
+      "env": {
+        "MAMA_MCP_START_HTTP_EMBEDDING": "false",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true"
+      },
+      "disabled": false,
+      "disabledTools": []
+    },
+    "prism": {
+      "command": "gravitron",
+      "args": [
+        "npx",
+        "-y",
+        "prism-mcp"
+      ],
+      "env": {
+        "PRISM_STORAGE": "local",
+        "PRISM_DARK_FACTORY_ENABLED": "true",
+        "NODE_OPTIONS": "--max-old-space-size=4096",
+        "ACT_R_DECAY_RATE": "0.5",
+        "SURPRISAL_GATE_THRESHOLD": "0.85"
+      },
+      "disabled": false,
+      "disabledTools": []
+    }
+  }
+}

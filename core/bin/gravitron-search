@@ -1,0 +1,19 @@
+#!/bin/bash
+# gravitron-search — Hybrid file discovery
+export GRAVITRON_ROOT="$HOME/.gravitron"
+export GRAVITRON_CORE="$GRAVITRON_ROOT/core"
+
+PATTERN=$1
+SEARCH_PATH=${2:-.}
+
+if [ -z "$PATTERN" ]; then
+    echo "Usage: gravitron search <pattern> [path]"
+    exit 1
+fi
+
+echo "--- [1/2] Gravitron Speed Search (Grep) ---"
+grep -rnI "$PATTERN" "$SEARCH_PATH" | head -n 20
+
+echo -e "\n--- [2/2] Gravitron Precision Search (ast-grep) ---"
+# Call through the harness
+gravitron npx -y ast-grep run --pattern "$PATTERN" "$SEARCH_PATH" 2>/dev/null | head -n 20

@@ -1,0 +1,4 @@
+#!/bin/bash
+export GRAVITRON_HOME="${GRAVITRON_HOME:-$HOME/.gravitron}"
+export GRAVITRON_STATE="${GRAVITRON_STATE:-$HOME/.gemini/antigravity}"
+exec python3 "$GRAVITRON_HOME/lib/gravitron_snap.py" "$@"

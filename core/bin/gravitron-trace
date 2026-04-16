@@ -1,0 +1,3 @@
+#!/bin/bash
+export GRAVITRON_HOME="${GRAVITRON_HOME:-$HOME/.gravitron}"
+exec python3 "$GRAVITRON_HOME/lib/gravitron_trace.py" "$@"

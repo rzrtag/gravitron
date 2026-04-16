@@ -1,0 +1,88 @@
+#!/bin/bash
+# Gravitron Unified Harness Router
+# Location: ~/.gravitron/core/bin/gravitron
+
+export GRAVITRON_ROOT="$HOME/.gravitron"
+export GRAVITRON_CORE="$GRAVITRON_ROOT/core"
+export GRAVITRON_USR="$GRAVITRON_ROOT/usr"
+
+# 1. Project Auto-Discovery
+# Look for .gravitron manifest to set GRAVITRON_STATE
+FIND_MANIFEST() {
+    local dir="$1"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/.gravitron" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
+
+PROJECT_ROOT=$(FIND_MANIFEST "$(pwd)")
+if [[ -n "$PROJECT_ROOT" ]]; then
+    export GRAVITRON_PROJECT="$PROJECT_ROOT"
+    export GRAVITRON_PROJECT_NAME=$(basename "$PROJECT_ROOT")
+    export GRAVITRON_STATE="${GRAVITRON_STATE:-$HOME/.gemini/antigravity}"
+    # Encapsulated Rules Discovery
+    if [[ -f "$PROJECT_ROOT/.gravitron/.antigravityrules" ]]; then
+        export GRAVITRON_RULES="$PROJECT_ROOT/.gravitron/.antigravityrules"
+    fi
+    # Local Snapshot Gateway (Point to project-specific silo)
+    if [[ -d "$GRAVITRON_STATE/snapshots/$GRAVITRON_PROJECT_NAME" ]]; then
+        ln -snf "$GRAVITRON_STATE/snapshots/$GRAVITRON_PROJECT_NAME" "$GRAVITRON_ROOT/output/snaps"
+    fi
+else
+    export GRAVITRON_STATE="${GRAVITRON_STATE:-$HOME/.gemini/antigravity}"
+fi
+
+export GRAVITRON_HOME="$GRAVITRON_ROOT" # Legacy support
+
+# 2. Command Routing
+CMD=$1
+shift
+
+if [[ -z "$CMD" ]]; then
+    echo "Gravitron Unified Harness v3.0"
+    echo "Usage: gravitron <command> [args...]"
+    echo ""
+    echo "Core Commands:"
+    echo "  util, snap, search, estimate, trace, certify"
+    echo "  doctor, test, plugins, enable, disable"
+    echo "  npx, pip, chrome"
+    echo ""
+    exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list
+fi
+
+# Route Core Python Modules
+case "$CMD" in
+    util)     exec python3 "$GRAVITRON_CORE/lib/gravitron_util.py" "$@" ;;
+    snap)     exec python3 "$GRAVITRON_CORE/lib/gravitron_snap.py" snap "$@" ;;
+    estimate) exec python3 "$GRAVITRON_CORE/lib/gravitron_estimate.py" "$@" ;;
+    trace)    exec python3 "$GRAVITRON_CORE/lib/gravitron_trace.py" "$@" ;;
+    certify)  exec bash "$GRAVITRON_CORE/bin/gravitron-certify" "$@" ;;
+    search)   exec bash "$GRAVITRON_CORE/bin/gravitron-search" "$@" ;;
+    doctor)   exec python3 "$GRAVITRON_CORE/lib/gravitron_doctor.py" "$@" ;;
+    test)     exec python3 "$GRAVITRON_CORE/lib/gravitron_tester.py" "$@" ;;
+    plugins)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" list "$@" ;;
+    enable)   exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" enable "$@" ;;
+    disable)  exec python3 "$GRAVITRON_CORE/lib/gravitron_plugins.py" disable "$@" ;;
+    npx)      
+        export PATH="$GRAVITRON_CORE/runtimes/node/bin:$PATH"
+        exec npx "$@" ;;
+    pip)      
+        exec "$GRAVITRON_CORE/runtimes/python/bin/pip" "$@" ;;
+    chrome)   
+        exec "$GRAVITRON_CORE/runtimes/browser/chrome-linux64/chrome" "$@" ;;
+esac
+
+# Route User Plugins
+if [[ -f "$GRAVITRON_USR/plugins/$CMD.py" ]]; then
+    exec python3 "$GRAVITRON_USR/plugins/$CMD.py" "$@"
+elif [[ -f "$GRAVITRON_USR/plugins/$CMD.sh" ]]; then
+    exec bash "$GRAVITRON_USR/plugins/$CMD.sh" "$@"
+fi
+
+echo "Error: Unknown Gravitron command '$CMD'"
+exit 1
