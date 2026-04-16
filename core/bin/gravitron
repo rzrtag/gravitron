@@ -76,7 +76,8 @@ case "$CMD" in
         git -C "$GRAVITRON_ROOT" add -A
         git -C "$GRAVITRON_ROOT" commit -m "${1:-chore: update gravitron engine}"
         git -C "$GRAVITRON_ROOT" push origin main
-        echo "[Gravitron] Pushed to origin/main." ;;
+        echo "[Gravitron] Pushed to origin/main."
+        exit 0 ;;
     npx)      
         export PATH="$GRAVITRON_CORE/runtimes/node/bin:$PATH"
         exec npx "$@" ;;
